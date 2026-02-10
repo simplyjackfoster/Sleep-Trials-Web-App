@@ -33,6 +33,20 @@ export default async function LeaderboardPage({
 
     const stats = await getLeaderboardStats(groupId, fromDate, toDate);
 
+    // Fetch active scoring rules
+    const config = await prisma?.scoringConfig.findFirst({
+        where: {
+            groupId,
+            activeFromDate: { lte: new Date() },
+        },
+        orderBy: { activeFromDate: "desc" },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rules = config ? JSON.parse(config.configJson) : null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const buckets = rules?.buckets || [];
+
     return (
         <div className="min-h-screen bg-slate-950 text-white p-4 pb-20">
             <div className="max-w-xl mx-auto space-y-6">
@@ -114,19 +128,39 @@ export default async function LeaderboardPage({
                 {/* Rules Explanation */}
                 <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-800 text-sm">
                     <h3 className="text-slate-400 font-bold mb-3 uppercase text-xs tracking-wider">How Scoring Works</h3>
-                    <div className="space-y-2 text-slate-300">
-                        <p>Total daily points are calculated based on your sleep duration:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-2 text-slate-400">
-                            <li><strong>-1 point</strong> for sleeping less than 4.5 hours (or missing a log).</li>
-                            <li><strong>0 points</strong> for 4.5 - 5.5 hours.</li>
-                            <li><strong>1 point</strong> for 5.5 - 6.5 hours.</li>
-                            <li><strong>2 points</strong> for 6.5 - 7.0 hours.</li>
-                            <li><strong>3 points</strong> for 7.0+ hours.</li>
-                        </ul>
-                        <p className="pt-2 text-yellow-500 text-xs">
-                            🏆 <strong>Bonus:</strong> +1 point if you sleep the most in the group that night!
-                        </p>
-                    </div>
+                    {config?.mode === "THRESHOLD" && rules ? (
+                        <div className="space-y-2 text-slate-300">
+                            <p>Total daily points are calculated based on your sleep duration:</p>
+                            <ul className="list-disc list-inside space-y-1 ml-2 text-slate-400">
+                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                {buckets.map((b: any, i: number) => (
+                                    <li key={i}>
+                                        {/* Logic to format bucket text safely */}
+                                        <strong>{b.points > 0 ? "+" : ""}{b.points} point{b.points !== 1 ? "s" : ""}</strong>
+                                        {" "}for{" "}
+                                        {b.min !== undefined && b.max !== undefined
+                                            ? `${b.min} - ${b.max} hours`
+                                            : b.min !== undefined
+                                                ? `${b.min}+ hours`
+                                                : `less than ${b.max} hours`
+                                        }.
+                                    </li>
+                                ))}
+                                <li><strong>{rules.nonSubmitPoints > 0 ? "+" : ""}{rules.nonSubmitPoints} point{rules.nonSubmitPoints !== 1 ? "s" : ""}</strong> for missing a log.</li>
+                            </ul>
+                            <p className="pt-2 text-yellow-500 text-xs">
+                                🏆 <strong>Bonus:</strong> +{rules.thumbsUpBonus} point if you sleep the most in the group that night!
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="text-slate-400 space-y-2">
+                            <p>Rank Based Scoring:</p>
+                            <ul className="list-disc list-inside ml-2">
+                                <li>1st place gets N points (number of participants)</li>
+                                <li>Last place gets 1 point</li>
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -134,12 +168,13 @@ export default async function LeaderboardPage({
             <form action={async () => {
                 "use server";
                 const { calculateDailyScores } = await import("@/lib/scoring");
-                const date = new Date();
-                await calculateDailyScores(groupId, date);
-                // Also yesterday
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                await calculateDailyScores(groupId, yesterday);
+                // Recalculate last 7 days
+                const today = new Date();
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(today);
+                    d.setDate(d.getDate() - i);
+                    await calculateDailyScores(groupId, d);
+                }
             }}>
                 <button type="submit" className="w-full mt-4 p-3 bg-red-900/20 text-red-400 text-xs rounded-lg hover:bg-red-900/40 transition">
                     Force Recalculate Scores (Debug)
