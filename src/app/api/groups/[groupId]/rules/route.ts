@@ -45,7 +45,7 @@ export async function POST(
     // Validate JSON
     try {
         JSON.parse(configJson);
-    } catch (e) {
+    } catch {
         return NextResponse.json({ error: "Invalid JSON config" }, { status: 400 });
     }
 

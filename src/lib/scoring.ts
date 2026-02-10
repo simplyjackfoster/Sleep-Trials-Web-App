@@ -97,6 +97,7 @@ export async function calculateDailyScores(groupId: string, date: Date) {
                 const hours = minutes / 60;
 
                 // Find bucket
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const bucket = buckets.find((b: any) => {
                     if (b.min !== undefined && hours < b.min) return false;
                     if (b.max !== undefined && hours >= b.max) return false;

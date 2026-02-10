@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { calculateDailyScores } from "@/lib/scoring";
-import { parseISO, startOfDay } from "date-fns";
 import { z } from "zod";
 
 const sleepEntrySchema = z.object({
