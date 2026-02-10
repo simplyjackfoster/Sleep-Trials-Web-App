@@ -7,21 +7,19 @@ export async function calculateDailyScores(groupId: string, date: Date) {
     const dayStart = startOfDay(date);
     const dayEnd = endOfDay(date);
 
-    // 1. Get Group Configuration
-    const config = await prisma.scoringConfig.findFirst({
-        where: {
-            groupId,
-            activeFromDate: { lte: date },
-        },
-        orderBy: { activeFromDate: "desc" },
-    });
-
-    if (!config) {
-        console.warn(`No active scoring config for group ${groupId} on ${date}`);
-        return false;
-    }
-
-    const rules = JSON.parse(config.configJson);
+    // HARDCODED RULES PER USER REQUEST
+    const config = { mode: "THRESHOLD" };
+    const rules = {
+        buckets: [
+            { max: 4.5, points: -1 },
+            { min: 4.5, max: 5.5, points: 0 },
+            { min: 5.5, max: 6.5, points: 1 },
+            { min: 6.5, max: 7, points: 2 },
+            { min: 7, points: 3 }
+        ],
+        nonSubmitPoints: -1,
+        thumbsUpBonus: 1
+    };
 
     // 2. Get all members
     const members = await prisma.groupMember.findMany({

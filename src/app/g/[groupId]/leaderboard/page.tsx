@@ -33,32 +33,23 @@ export default async function LeaderboardPage({
 
     const stats = await getLeaderboardStats(groupId, fromDate, toDate);
 
-    // Fetch active scoring rules
+    // HARDCODED RULES
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let rules: any = null;
+    const configMode: any = "THRESHOLD";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let buckets: any[] = [];
+    const rules: any = {
+        buckets: [
+            { max: 4.5, points: -1 },
+            { min: 4.5, max: 5.5, points: 0 },
+            { min: 5.5, max: 6.5, points: 1 },
+            { min: 6.5, max: 7, points: 2 },
+            { min: 7, points: 3 }
+        ],
+        nonSubmitPoints: -1,
+        thumbsUpBonus: 1
+    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let configMode: any = "RANK";
-
-    try {
-        const config = await prisma?.scoringConfig.findFirst({
-            where: {
-                groupId,
-                activeFromDate: { lte: new Date() },
-            },
-            orderBy: { activeFromDate: "desc" },
-        });
-
-        if (config) {
-            rules = JSON.parse(config.configJson);
-            buckets = rules?.buckets || [];
-            configMode = config.mode;
-        }
-    } catch (e) {
-        console.error("Error loading scoring config:", e);
-        // Fallback or just show nothing/rank mode
-    }
+    const buckets: any[] = rules.buckets;
 
     return (
         <div className="min-h-screen bg-slate-950 text-white p-4 pb-20">
