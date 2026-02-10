@@ -81,6 +81,14 @@ export async function calculateDailyScores(groupId: string, date: Date) {
         const buckets = rules.buckets || [];
         const maxSleep = validEntries.length > 0 ? Math.max(...validEntries.map((e) => e.sleepMinutes)) : 0;
 
+        // Safety: If NO ONE submitted anything today, assume the group wasn't active or holiday?
+        // Or at least don't punish everyone if it's a fresh day with 0 entries.
+        // However, if one person submitted, we should score everyone (others get -1).
+        if (validEntries.length === 0) {
+            console.log(`No valid entries for ${groupId} on ${date.toISOString().split('T')[0]}, skipping scoring.`);
+            return true;
+        }
+
         for (const member of members) {
             const entry = entriesMap.get(member.userId);
             let points = 0;
