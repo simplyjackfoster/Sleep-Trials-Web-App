@@ -129,6 +129,22 @@ export default async function LeaderboardPage({
                     </div>
                 </div>
             </div>
+
+            {/* Debug Actions */}
+            <form action={async () => {
+                "use server";
+                const { calculateDailyScores } = await import("@/lib/scoring");
+                const date = new Date();
+                await calculateDailyScores(groupId, date);
+                // Also yesterday
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                await calculateDailyScores(groupId, yesterday);
+            }}>
+                <button type="submit" className="w-full mt-4 p-3 bg-red-900/20 text-red-400 text-xs rounded-lg hover:bg-red-900/40 transition">
+                    Force Recalculate Scores (Debug)
+                </button>
+            </form>
         </div>
     );
 }
