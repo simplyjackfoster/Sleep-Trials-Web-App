@@ -120,8 +120,8 @@ export default async function LeaderboardPage({
                             <li><strong>-1 point</strong> for sleeping less than 4.5 hours (or missing a log).</li>
                             <li><strong>0 points</strong> for 4.5 - 5.5 hours.</li>
                             <li><strong>1 point</strong> for 5.5 - 6.5 hours.</li>
-                            <li><strong>2 points</strong> for 6.5 - 7.5 hours.</li>
-                            <li><strong>3 points</strong> for 7.5+ hours.</li>
+                            <li><strong>2 points</strong> for 6.5 - 7.0 hours.</li>
+                            <li><strong>3 points</strong> for 7.0+ hours.</li>
                         </ul>
                         <p className="pt-2 text-yellow-500 text-xs">
                             🏆 <strong>Bonus:</strong> +1 point if you sleep the most in the group that night!

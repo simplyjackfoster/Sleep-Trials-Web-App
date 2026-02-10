@@ -21,8 +21,8 @@ export default function RulesPage({
             { max: 4.5, points: -1 },
             { min: 4.5, max: 5.5, points: 0 },
             { min: 5.5, max: 6.5, points: 1 },
-            { min: 6.5, max: 7.5, points: 2 },
-            { min: 7.5, points: 3 },
+            { min: 6.5, max: 7.0, points: 2 },
+            { min: 7.0, points: 3 },
         ],
         nonSubmitPoints: -1,
         thumbsUpBonus: 1
