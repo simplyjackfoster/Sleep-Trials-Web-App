@@ -35,7 +35,7 @@ export async function POST(req: Request) {
                 // Create a default ScoringConfig
                 scoringConfigs: {
                     create: {
-                        activeFromDate: new Date(),
+                        activeFromDate: new Date(new Date().setDate(new Date().getDate() - 7)), // Active from 7 days ago to cover today
                         mode: "THRESHOLD", // Default mode
                         configJson: JSON.stringify({
                             buckets: [

@@ -39,7 +39,7 @@ export default function RulesPage({
                 body: JSON.stringify({
                     mode,
                     configJson: jsonConfig,
-                    activeFromDate: new Date().toISOString(), // Immediate effect for MVP
+                    activeFromDate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(), // Active from start of today
                 }),
             });
 

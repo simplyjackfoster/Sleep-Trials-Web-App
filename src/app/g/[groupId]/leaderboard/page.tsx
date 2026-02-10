@@ -110,6 +110,24 @@ export default async function LeaderboardPage({
                         <div className="p-8 text-center text-slate-500">No data for this period.</div>
                     )}
                 </div>
+
+                {/* Rules Explanation */}
+                <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-800 text-sm">
+                    <h3 className="text-slate-400 font-bold mb-3 uppercase text-xs tracking-wider">How Scoring Works</h3>
+                    <div className="space-y-2 text-slate-300">
+                        <p>Total daily points are calculated based on your sleep duration:</p>
+                        <ul className="list-disc list-inside space-y-1 ml-2 text-slate-400">
+                            <li><strong>-1 point</strong> for sleeping less than 4.5 hours (or missing a log).</li>
+                            <li><strong>0 points</strong> for 4.5 - 5.5 hours.</li>
+                            <li><strong>1 point</strong> for 5.5 - 6.5 hours.</li>
+                            <li><strong>2 points</strong> for 6.5 - 7.5 hours.</li>
+                            <li><strong>3 points</strong> for 7.5+ hours.</li>
+                        </ul>
+                        <p className="pt-2 text-yellow-500 text-xs">
+                            🏆 <strong>Bonus:</strong> +1 point if you sleep the most in the group that night!
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     );
