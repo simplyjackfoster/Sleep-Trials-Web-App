@@ -66,20 +66,27 @@ export default async function GroupDashboard({
 
             <main className="max-w-xl mx-auto px-4 space-y-8">
                 {/* Actions */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                     <Link
                         href={`/g/${groupId}/submit`}
-                        className="flex flex-col items-center justify-center p-4 bg-indigo-600 rounded-xl hover:bg-indigo-500 transition shadow-lg shadow-indigo-900/20"
+                        className="flex flex-col items-center justify-center p-3 bg-indigo-600 rounded-xl hover:bg-indigo-500 transition shadow-lg shadow-indigo-900/20"
                     >
-                        <Plus className="w-8 h-8 mb-2" />
-                        <span className="font-bold">Log Sleep</span>
+                        <Plus className="w-6 h-6 mb-1" />
+                        <span className="text-xs font-bold">Log</span>
+                    </Link>
+                    <Link
+                        href={`/g/${groupId}/history`}
+                        className="flex flex-col items-center justify-center p-3 bg-slate-800 rounded-xl hover:bg-slate-700 transition border border-slate-700"
+                    >
+                        <Moon className="w-6 h-6 mb-1 text-indigo-400" />
+                        <span className="text-xs font-bold">History</span>
                     </Link>
                     <Link
                         href={`/g/${groupId}/leaderboard`}
-                        className="flex flex-col items-center justify-center p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition border border-slate-700"
+                        className="flex flex-col items-center justify-center p-3 bg-slate-800 rounded-xl hover:bg-slate-700 transition border border-slate-700"
                     >
-                        <Trophy className="w-8 h-8 mb-2 text-yellow-500" />
-                        <span className="font-bold">Leaderboard</span>
+                        <Trophy className="w-6 h-6 mb-1 text-yellow-500" />
+                        <span className="text-xs font-bold">Table</span>
                     </Link>
                 </div>
 
