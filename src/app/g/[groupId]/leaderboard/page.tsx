@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { getLeaderboardStats } from "@/lib/leaderboard";
 import { subDays } from "date-fns";
 import Link from "next/link";
@@ -13,7 +11,7 @@ export default async function LeaderboardPage({
     params: Promise<{ groupId: string }>;
     searchParams: Promise<{ range?: string }>;
 }) {
-    const session = await getServerSession(authOptions);
+    // const session = await getServerSession(authOptions); // Removed unused session
 
     // Await params content before using it
     const { groupId } = await params;
@@ -93,6 +91,7 @@ export default async function LeaderboardPage({
                                     </td>
                                     <td className="p-4 font-medium flex items-center gap-2">
                                         <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs overflow-hidden">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             {user.image ? <img src={user.image} alt={user.name ?? "U"} /> : (user.name?.[0] || "?").toUpperCase()}
                                         </div>
                                         {user.name}

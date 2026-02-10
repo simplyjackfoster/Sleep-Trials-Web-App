@@ -104,6 +104,7 @@ export default async function GroupDashboard({
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-sm font-bold overflow-hidden">
                                                     {member?.user.image ? (
+                                                        // eslint-disable-next-line @next/next/no-img-element
                                                         <img src={member.user.image} alt={member.user.name ?? "User"} />
                                                     ) : (
                                                         (member?.user.name?.[0] || "?").toUpperCase()

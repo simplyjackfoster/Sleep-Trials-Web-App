@@ -28,7 +28,7 @@ export default function RulesPage({
         thumbsUpBonus: 1
     }, null, 2));
 
-    async function onSave() {
+    async function onSubmit() {
         setIsLoading(true);
         setError("");
 
@@ -108,7 +108,7 @@ export default function RulesPage({
                 {error && <div className="text-red-400 text-sm">{error}</div>}
 
                 <button
-                    onClick={onSave}
+                    onClick={onSubmit}
                     disabled={isLoading}
                     className="w-full flex justify-center items-center py-3 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition disabled:opacity-50"
                 >

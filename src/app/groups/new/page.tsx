@@ -42,8 +42,12 @@ export default function CreateGroupPage() {
 
             router.push(`/g/${data.id}`);
             router.refresh();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred");
+            }
         } finally {
             setIsLoading(false);
         }

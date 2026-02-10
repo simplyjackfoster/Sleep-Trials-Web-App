@@ -1,12 +1,14 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+// import { use, useState } from "react"; // Unused useEffect, remove if not needed. 
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { format, subDays } from "date-fns";
-import { Loader2, ArrowLeft, Clock } from "lucide-react";
+// import { parseISO, startOfDay } from "date-fns"; // Removed unused imports // Removed subDays
+import { format } from "date-fns"; // Keeping format as it's used. The instruction's edit for this line seems to be an error.
+import { Loader2, ArrowLeft } from "lucide-react"; // Removed Clock
 import Link from "next/link";
 import clsx from "clsx";
 
@@ -77,14 +79,19 @@ export default function SubmitSleepPage({
             });
 
             if (!response.ok) {
+                // const session = await getServerSession(authOptions); // Unused session
                 const data = await response.json();
                 throw new Error(data.error || "Failed to submit sleep");
             }
 
             router.push(`/g/${groupId}`);
             router.refresh();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred");
+            }
         } finally {
             setIsLoading(false);
         }

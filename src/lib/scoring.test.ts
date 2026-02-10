@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import { calculateDailyScores } from "./scoring";
 import prisma from "@/lib/prisma";
