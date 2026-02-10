@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { format, subDays } from "date-fns";
@@ -19,10 +19,7 @@ const sleepEntrySchema = z.object({
     note: z.string().optional(),
 });
 
-type FormValues = z.infer<typeof sleepEntrySchema> & {
-    hours: number;
-    minutes: number;
-};
+type FormValues = z.infer<typeof sleepEntrySchema>;
 
 export default function SubmitSleepPage({
     params,
@@ -48,7 +45,7 @@ export default function SubmitSleepPage({
     const [error, setError] = useState("");
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(sleepEntrySchema),
+        resolver: zodResolver(sleepEntrySchema) as Resolver<FormValues>,
         defaultValues: {
             date: format(new Date(), "yyyy-MM-dd"), // Default to today
             hours: 7,
