@@ -34,18 +34,31 @@ export default async function LeaderboardPage({
     const stats = await getLeaderboardStats(groupId, fromDate, toDate);
 
     // Fetch active scoring rules
-    const config = await prisma?.scoringConfig.findFirst({
-        where: {
-            groupId,
-            activeFromDate: { lte: new Date() },
-        },
-        orderBy: { activeFromDate: "desc" },
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let rules: any = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let buckets: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let configMode: any = "RANK";
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rules = config ? JSON.parse(config.configJson) : null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const buckets = rules?.buckets || [];
+    try {
+        const config = await prisma?.scoringConfig.findFirst({
+            where: {
+                groupId,
+                activeFromDate: { lte: new Date() },
+            },
+            orderBy: { activeFromDate: "desc" },
+        });
+
+        if (config) {
+            rules = JSON.parse(config.configJson);
+            buckets = rules?.buckets || [];
+            configMode = config.mode;
+        }
+    } catch (e) {
+        console.error("Error loading scoring config:", e);
+        // Fallback or just show nothing/rank mode
+    }
 
     return (
         <div className="min-h-screen bg-slate-950 text-white p-4 pb-20">
@@ -128,7 +141,7 @@ export default async function LeaderboardPage({
                 {/* Rules Explanation */}
                 <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-800 text-sm">
                     <h3 className="text-slate-400 font-bold mb-3 uppercase text-xs tracking-wider">How Scoring Works</h3>
-                    {config?.mode === "THRESHOLD" && rules ? (
+                    {configMode === "THRESHOLD" && rules ? (
                         <div className="space-y-2 text-slate-300">
                             <p>Total daily points are calculated based on your sleep duration:</p>
                             <ul className="list-disc list-inside space-y-1 ml-2 text-slate-400">
