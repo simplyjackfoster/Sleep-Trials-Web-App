@@ -164,4 +164,23 @@ describe("Scoring Engine", () => {
         // Total = 2.
         expect(event.points).toBe(2);
     });
+    it("should NOT deduct points if NO ONE submitted (Void Day)", async () => {
+        (prisma.groupMember.findMany as any).mockResolvedValue([
+            { userId: "u1" },
+            { userId: "u2" },
+        ]);
+
+        // No entries for today
+        (prisma.sleepEntry.findMany as any)
+            .mockResolvedValueOnce([]) // entries
+            .mockResolvedValueOnce([]); // history
+
+        await calculateDailyScores(groupId, date);
+
+        // Should first delete old events
+        expect(prisma.scoreEvent.deleteMany).toHaveBeenCalled();
+
+        // Should NOT create new events (void day)
+        expect(prisma.scoreEvent.createMany).not.toHaveBeenCalled();
+    });
 });

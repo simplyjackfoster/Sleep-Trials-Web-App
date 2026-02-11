@@ -103,6 +103,11 @@ export async function calculateDailyScores(groupId: string, date: Date) {
         },
     });
 
+    // Void Day Logic: If nobody submitted, don't penalize anyone.
+    if (entries.length === 0) {
+        return true;
+    }
+
     /* 
        Safety check: If NO ONE submitted usually skip? 
        But requirement says "Didn't submit = -1". 
