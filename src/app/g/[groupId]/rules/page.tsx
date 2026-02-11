@@ -18,14 +18,14 @@ export default function RulesPage({
     const [mode, setMode] = useState<"RANK" | "THRESHOLD">("THRESHOLD");
     const [jsonConfig, setJsonConfig] = useState(JSON.stringify({
         buckets: [
-            { max: 4.5, points: -1 },
-            { min: 4.5, max: 5.5, points: 0 },
-            { min: 5.5, max: 6.5, points: 1 },
-            { min: 6.5, max: 7.0, points: 2 },
-            { min: 7.0, points: 3 },
+            { max: 6, points: -1 },
+            { min: 6, max: 6.5, points: 0 },
+            { min: 6.5, max: 7, points: 1 },
+            { min: 7, max: 7.5, points: 2 },
+            { min: 7.5, points: 3 }
         ],
         nonSubmitPoints: -1,
-        thumbsUpBonus: 1
+        dailyWinnerBonus: 1
     }, null, 2));
 
     async function onSubmit() {

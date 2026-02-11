@@ -33,20 +33,20 @@ export default async function LeaderboardPage({
 
     const stats = await getLeaderboardStats(groupId, fromDate, toDate);
 
-    // HARDCODED RULES
+    // HARDCODED RULES - Updated to match new scoring.ts logic
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configMode: any = "THRESHOLD";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rules: any = {
         buckets: [
-            { max: 4.5, points: -1 },
-            { min: 4.5, max: 5.5, points: 0 },
-            { min: 5.5, max: 6.5, points: 1 },
-            { min: 6.5, max: 7, points: 2 },
-            { min: 7, points: 3 }
+            { max: 6, points: -1 },
+            { min: 6, max: 6.5, points: 0 },
+            { min: 6.5, max: 7, points: 1 },
+            { min: 7, max: 7.5, points: 2 },
+            { min: 7.5, points: 3 }
         ],
         nonSubmitPoints: -1,
-        thumbsUpBonus: 1
+        dailyWinnerBonus: 1
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const buckets: any[] = rules.buckets;
@@ -140,7 +140,7 @@ export default async function LeaderboardPage({
                                 {buckets.map((b: any, i: number) => (
                                     <li key={i}>
                                         {/* Logic to format bucket text safely */}
-                                        <strong>{b.points > 0 ? "+" : ""}{b.points} point{b.points !== 1 ? "s" : ""}</strong>
+                                        <strong>{b.points > 0 ? "+" : ""}{b.points} point{Math.abs(b.points) !== 1 ? "s" : ""}</strong>
                                         {" "}for{" "}
                                         {b.min !== undefined && b.max !== undefined
                                             ? `${b.min} - ${b.max} hours`
@@ -150,11 +150,16 @@ export default async function LeaderboardPage({
                                         }.
                                     </li>
                                 ))}
-                                <li><strong>{rules.nonSubmitPoints > 0 ? "+" : ""}{rules.nonSubmitPoints} point{rules.nonSubmitPoints !== 1 ? "s" : ""}</strong> for missing a log.</li>
+                                <li><strong>{rules.nonSubmitPoints > 0 ? "+" : ""}{rules.nonSubmitPoints} point{Math.abs(rules.nonSubmitPoints) !== 1 ? "s" : ""}</strong> for missing a log.</li>
                             </ul>
-                            <p className="pt-2 text-yellow-500 text-xs">
-                                🏆 <strong>Bonus:</strong> +{rules.thumbsUpBonus} point if you sleep the most in the group that night!
-                            </p>
+                            <div className="pt-2 space-y-1">
+                                <p className="text-yellow-500 text-xs">
+                                    🏆 <strong>Daily Winner:</strong> +{rules.dailyWinnerBonus} point if you sleep the most in the group!
+                                </p>
+                                <p className="text-orange-500 text-xs">
+                                    🔥 <strong>Streak Bonus:</strong> +3 points for 7 days of &gt;7h sleep. +1 for every day after!
+                                </p>
+                            </div>
                         </div>
                     ) : (
                         <div className="text-slate-400 space-y-2">
