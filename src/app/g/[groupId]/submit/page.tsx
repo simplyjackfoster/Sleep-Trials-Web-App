@@ -45,6 +45,8 @@ export default function SubmitSleepPage({
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [pendingData, setPendingData] = useState<FormValues | null>(null);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(sleepEntrySchema) as Resolver<FormValues>,
@@ -58,28 +60,34 @@ export default function SubmitSleepPage({
         },
     });
 
-    async function onSubmit(values: FormValues) {
+    const handleInitialSubmit = (values: FormValues) => {
+        setPendingData(values);
+        setShowConfirmation(true);
+    };
+
+    async function handleFinalSubmit() {
+        if (!pendingData) return;
+
         setIsLoading(true);
         setError("");
 
         // Calculate total minutes
-        const sleepMinutes = values.hours * 60 + values.minutes;
+        const sleepMinutes = pendingData.hours * 60 + pendingData.minutes;
 
         try {
             const response = await fetch(`/api/groups/${groupId}/sleep`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    date: values.date,
+                    date: pendingData.date,
                     sleepMinutes,
-                    source: values.source,
-                    confidence: values.confidence,
-                    note: values.note,
+                    source: pendingData.source,
+                    confidence: pendingData.confidence,
+                    note: pendingData.note,
                 }),
             });
 
             if (!response.ok) {
-                // const session = await getServerSession(authOptions); // Unused session
                 const data = await response.json();
                 throw new Error(data.error || "Failed to submit sleep");
             }
@@ -92,6 +100,7 @@ export default function SubmitSleepPage({
             } else {
                 setError("An unknown error occurred");
             }
+            setShowConfirmation(false); // Close on error to show error message
         } finally {
             setIsLoading(false);
         }
@@ -111,7 +120,7 @@ export default function SubmitSleepPage({
                     <h1 className="text-xl font-bold">Log Sleep</h1>
                 </div>
 
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-6">
                     {/* Date */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-slate-300">Night of</label>
@@ -196,9 +205,44 @@ export default function SubmitSleepPage({
                         disabled={isLoading}
                         className="w-full flex justify-center items-center py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-bold text-lg hover:opacity-90 transition shadow-lg shadow-indigo-500/20 disabled:opacity-50"
                     >
-                        {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Submit Sleep"}
+                        Submit Check
                     </button>
                 </form>
+
+                {/* Confirmation Modal */}
+                {showConfirmation && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm p-6 space-y-6 shadow-2xl animate-in zoom-in-95 duration-200">
+                            <div className="text-center space-y-2">
+                                <div className="mx-auto w-12 h-12 bg-yellow-500/20 text-yellow-500 rounded-full flex items-center justify-center mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                                        <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Evidence Required</h3>
+                                <p className="text-slate-400">
+                                    Please confirm that you have sent screenshot evidence of your sleep score to the group chat.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    onClick={() => setShowConfirmation(false)}
+                                    className="py-3 px-4 rounded-xl bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 transition"
+                                >
+                                    No, go back
+                                </button>
+                                <button
+                                    onClick={handleFinalSubmit}
+                                    disabled={isLoading}
+                                    className="py-3 px-4 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold hover:opacity-90 transition flex justify-center items-center"
+                                >
+                                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Yes, I sent it"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
